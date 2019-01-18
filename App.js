@@ -34,7 +34,29 @@ class ListSong extends React.Component{
 }
 
 class ArtistProfileScreen extends React.Component {
+  constructor(props){
+    super(props);
+    this.state={
+      isPlaying: false
+    };
+    this.togglePlaying = this.togglePlaying.bind(this)
+  }
+  togglePlaying(){
+    this.setState({isPlaying: !this.state.isPlaying})
+  }
+  playingText(){
+    if (this.state.isPlaying){
+      return <Text style={styles.buttonText}>PAUSE</Text>
+    }
+    else {return <Text style={styles.buttonText}>SHUFFLE PLAY</Text>}
+  }
+  playingIcon(){
+    if (this.state.isPlaying){
+      return <Icon name="controller-paus" size ={30} color='white'/>
+    }
+    else {return <Icon name="controller-play" size ={30} color='white'/>}
 
+  }
   render() {
     return (
 
@@ -42,10 +64,9 @@ class ArtistProfileScreen extends React.Component {
         <LinearGradient colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0.8)', 'rgba(0,0,0,1)']} style={styles.linearGradient}>
             <Text style={styles.name}>{`High\nKlassified`}</Text>
             <Text style={styles.listeners}>46,856 MONTHLY LISTENERS</Text>
-            <TouchableOpacity style={styles.button}  onPress={() => {
-              Alert.alert('Congratulations! You pressed the button');
-            }}>
-              <Text style={styles.buttonText}>SHUFFLE PLAY</Text>
+            <TouchableOpacity style={styles.button}
+              onPress={this.togglePlaying}>
+              {this.playingText()}
             </TouchableOpacity>
             <Text style={styles.popular}>Popular</Text>
             <ScrollView>
@@ -66,8 +87,8 @@ class ArtistProfileScreen extends React.Component {
                 <Text style={{color:'gray',textAlign:"center"}}><Text style={{fontWeight:'bold'}}>Scopola •</Text> High Klassified</Text>
                 <Text style={{color:'gray',textAlign:"center"}}><Icon name="laptop" color='gray'/> Devices Available</Text>
               </View>
-              <TouchableOpacity>
-                <Icon name="controller-paus" size ={30} color='white'/>
+              <TouchableOpacity onPress={this.togglePlaying}>
+                {this.playingIcon()}
               </TouchableOpacity>
 
 
@@ -244,6 +265,7 @@ const styles = StyleSheet.create({
     color: 'white',
     paddingLeft: 40,
     paddingRight:40,
+
 
   },
   popular: {
