@@ -1,6 +1,6 @@
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, ImageBackground,Button, Alert, TouchableOpacity} from 'react-native';
+import {Platform, StyleSheet, Text, View, ImageBackground,Button, Alert, TouchableOpacity,ScrollView} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Entypo';
 import {createStackNavigator,createAppContainer, createBottomTabNavigator} from 'react-navigation';
@@ -23,7 +23,7 @@ class ListSong extends React.Component{
     return(
       <View style={styles.listSong}>
         <Text style={{color:'gray',padding:10}}>{this.props.number}</Text>
-        <Text style={{color:'gray',paddingLeft:10}}><Text style={{fontWeight:'bold',color:'white'}}>{this.props.songName}</Text>{"\n"}{this.props.listensCount}</Text>
+        <Text style={{color:'gray',paddingLeft:10,fontSize:10}}><Text style={{fontSize:15,color:'white'}}>{this.props.songName}</Text>{"\n"}{this.props.listensCount}</Text>
         <TouchableOpacity style={{marginLeft:'auto', marginRight:0}}>
             <Icon  name="dots-three-horizontal" size ={10} color='gray'/>
         </TouchableOpacity>
@@ -48,8 +48,15 @@ class ArtistProfileScreen extends React.Component {
               <Text style={styles.buttonText}>SHUFFLE PLAY</Text>
             </TouchableOpacity>
             <Text style={styles.popular}>Popular</Text>
-            <ListSong number="1" songName='1919' listensCount='372,363'/>
-            <ListSong number="2" songName='NS Bounce' listensCount='97,628'/>
+            <ScrollView>
+              <ListSong number="1" songName='1919' listensCount='372,363'/>
+              <ListSong number="2" songName='NS Bounce' listensCount='97,628'/>
+              <ListSong number="3" songName='Numb' listensCount='91,587'/>
+              <ListSong number="4" songName='Gold' listensCount='637,548'/>
+              <ListSong number="5" songName='Barely' listensCount='114,828'/>
+              <ListSong number="6" songName='Another Song' listensCount='0'/>
+
+            </ScrollView>
             <View style={styles.nowPlaying}>
               <TouchableOpacity>
                   <Icon name="heart" size ={30} color='white'/>
@@ -185,6 +192,7 @@ const styles = StyleSheet.create({
     padding:10,
     marginBottom:0,
     marginTop:'auto',
+    backgroundColor:'#0d0d0d'
   },
 
   following:{
