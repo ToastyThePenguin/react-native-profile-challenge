@@ -1,6 +1,6 @@
 
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, ImageBackground,Button, Alert,
+import {Animated, Platform, StyleSheet, Text, View, ImageBackground,Button, Alert,
   TouchableOpacity,ScrollView} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Entypo';
@@ -26,14 +26,26 @@ class ListSong extends React.Component{
   }
 }
 
+
+
+const HEADER_MAX_SIZE=50;
+const HEADER_MIN_SIZE = 2;
+const HEADER_SIZE_RANGE = HEADER_MAX_SIZE - HEADER_MIN_SIZE;
+
 class ArtistProfileScreen extends React.Component {
   constructor(props){
     super(props);
     this.state={
-      isPlaying: false
+      isPlaying: false,
+      scrollY:new Animated.Value(0),
     };
-    this.togglePlaying = this.togglePlaying.bind(this)
+
+
+    this.togglePlaying = this.togglePlaying.bind(this);
+
   }
+
+
   togglePlaying(){
     this.setState({isPlaying: !this.state.isPlaying})
   }
@@ -50,27 +62,50 @@ class ArtistProfileScreen extends React.Component {
     else {return <Icon name="controller-play" size ={30} color='white'/>}
 
   }
+  dynamicMargin(){
+    const nameSize = this.state.scrollY.interpolate({
+      inputRange:[0,HEADER_SIZE_RANGE],
+      outputRange:[HEADER_MAX_SIZE,HEADER_MIN_SIZE],
+      extrapolate:'clamp',
+    });
+    return parseInt(nameSize*4)
+  }
+
+
   render() {
-    return (
+    const nameSize = this.state.scrollY.interpolate({
+      inputRange:[0,HEADER_SIZE_RANGE],
+      outputRange:[HEADER_MAX_SIZE,HEADER_MIN_SIZE],
+      extrapolate:'clamp',
+    });
+        return (
 
       <ImageBackground style = {styles.container} source = {require('./assets/bg.jpg')}>
         <LinearGradient colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0.8)', 'rgba(0,0,0,1)']}
           style={styles.linearGradient}>
-
-            <Text style={styles.name}>{`High\nKlassified`}</Text>
+          <View style={{marginTop: '40%'}}>
+            <Animated.Text style={[styles.name, {fontSize: nameSize}]}>{`High\nKlassified`}</Animated.Text>
             <Text style={styles.listeners}>46,856 MONTHLY LISTENERS</Text>
             <TouchableOpacity style={styles.button}
               onPress={this.togglePlaying}>
               {this.playingText()}
             </TouchableOpacity>
+          </View>
+          <ScrollView  scrollEventThrottle ={16} onScroll = {Animated.event([{nativeEvent: {contentOffset:{y: this.state.scrollY}}}])}>
             <Text style={styles.popular}>Popular</Text>
 
-            <ScrollView>
+
               <ListSong number="1" songName='1919' listensCount='372,363'/>
               <ListSong number="2" songName='NS Bounce' listensCount='97,628'/>
               <ListSong number="3" songName='Numb' listensCount='91,587'/>
               <ListSong number="4" songName='Gold' listensCount='637,548'/>
               <ListSong number="5" songName='Barely' listensCount='114,828'/>
+              <ListSong number="6" songName='Another Song' listensCount='0'/>
+              <ListSong number="6" songName='Another Song' listensCount='0'/>
+              <ListSong number="6" songName='Another Song' listensCount='0'/>
+              <ListSong number="6" songName='Another Song' listensCount='0'/>
+              <ListSong number="6" songName='Another Song' listensCount='0'/>
+              <ListSong number="6" songName='Another Song' listensCount='0'/>
               <ListSong number="6" songName='Another Song' listensCount='0'/>
             </ScrollView>
 
@@ -106,12 +141,46 @@ class LibraryScreen extends React.Component{
     );
   }
 }
+const HEADER_MAX_HEIGHT=60;
+const HEADER_MIN_HEIGHT = 20;
+const HEADER_SCROLL_DIST = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 class HomeScreen extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {scrollY:new Animated.Value(0), headerBG: 'blue'};
+
+  }
+
+
+
   render(){
+    const headerSize = this.state.scrollY.interpolate({
+      inputRange:[0,HEADER_SCROLL_DIST],
+      outputRange:[HEADER_MAX_HEIGHT,HEADER_MIN_HEIGHT],
+      extrapolate:'clamp',
+    });
+    const headerBG = headerSize<=40? 'red':'blue';
+
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <Text >Home Screen</Text>
+          <Animated.Text style = {{fontSize:headerSize, backgroundColor: 'blue'}}>Home Screen</Animated.Text>
+
+        <ScrollView style={{marginTop:HEADER_MAX_HEIGHT}}
+          scrollEventThrottle ={16} onScroll = {Animated.event([{nativeEvent: {contentOffset:{y: this.state.scrollY}}}])}>
+            <ListSong number="1" songName='1919' listensCount='372,363'/>
+            <ListSong number="2" songName='NS Bounce' listensCount='97,628'/>
+            <ListSong number="3" songName='Numb' listensCount='91,587'/>
+            <ListSong number="4" songName='Gold' listensCount='637,548'/>
+            <ListSong number="5" songName='Barely' listensCount='114,828'/>
+            <ListSong number="6" songName='Another Song' listensCount='0'/>
+            <ListSong number="7" songName='Another Song' listensCount='0'/>
+            <ListSong number="8" songName='Another Song' listensCount='0'/>
+            <ListSong number="9" songName='Another Song' listensCount='0'/>
+            <ListSong number="10" songName='Another Song' listensCount='0'/>
+            <ListSong number="11" songName='Another Song' listensCount='0'/>
+          </ScrollView>
+
       </View>
     );
   }
@@ -152,6 +221,7 @@ const SearchStack = createStackNavigator(
        </TouchableOpacity>
       ),
     headerTransparent: true,
+    headerStyle:{backgroundColor:'transparent',},
     headerTintColor: 'white',
   }
 }
@@ -183,17 +253,21 @@ const TabNavigator = createBottomTabNavigator(
       }
     },
   },
+
   {
     defaultNavigationOptions:({navigation}) =>({
+
       tabBarOptions:{
         activeTintColor:'white',
-        showICon: true,
+        showIcon: true,
         style:{
           backgroundColor:'#111',
         }
       },
+
       })
-  }
+  },
+
 );
 
 const styles = StyleSheet.create({
@@ -230,10 +304,9 @@ const styles = StyleSheet.create({
 },
 
   name: {
-    fontSize: 50,
+
     textAlign: 'center',
     marginBottom: 20,
-    paddingTop:'40%',
     color: 'white',
     fontWeight: 'bold',
   },
@@ -251,6 +324,7 @@ const styles = StyleSheet.create({
     paddingBottom:10,
     marginLeft:30,
     marginRight:30,
+    alignSelf: 'center',
     backgroundColor: '#1db954',
   },
 
@@ -258,6 +332,7 @@ const styles = StyleSheet.create({
     color: 'white',
     paddingLeft: 40,
     paddingRight:40,
+    textAlign: 'center',
   },
 
   popular: {
@@ -265,6 +340,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight:'bold',
     fontSize: 20,
+    textAlign: 'center',
   },
 
   nowPlaying:{
