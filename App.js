@@ -103,21 +103,25 @@ class ArtistProfileScreen extends React.Component {
       outputRange:[HEADER_MAX_SIZE,HEADER_MIN_SIZE],
       extrapolate:'clamp',
     });
-
+    const marginSize = this.state.scrollY.interpolate({
+      inputRange:[0,HEADER_SIZE_RANGE],
+      outputRange:['40%','5%'],
+      extrapolate:'clamp',
+    });
 
         return (
 
       <ImageBackground style = {styles.container} source = {require('./assets/bg.jpg')}>
         <LinearGradient colors={['rgba(0,0,0,0.2)', 'rgba(0,0,0,0.8)', 'rgba(0,0,0,1)']}
           style={styles.linearGradient}>
-          <View style={{marginTop: '40%'}}>
+          <Animated.View style={{marginTop: marginSize}}>
             <Animated.Text style={[styles.name, {fontSize: nameSize}]}>{`High\nKlassified`}</Animated.Text>
             <Text style={styles.listeners}>46,856 MONTHLY LISTENERS</Text>
             <TouchableOpacity style={styles.button}
               onPress={this.togglePlaying}>
               {this.playingText()}
             </TouchableOpacity>
-          </View>
+          </Animated.View>
           <ScrollView  scrollEventThrottle ={16} onScroll = {Animated.event([{nativeEvent: {contentOffset:{y: this.state.scrollY}}}])}>
             <Text style={styles.popular}>Popular</Text>
 
