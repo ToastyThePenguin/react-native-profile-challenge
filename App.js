@@ -29,7 +29,7 @@ class ListSong extends React.Component{
 
 
 const HEADER_MAX_SIZE=50;
-const HEADER_MIN_SIZE = 2;
+const HEADER_MIN_SIZE = 0;
 const HEADER_SIZE_RANGE = HEADER_MAX_SIZE - HEADER_MIN_SIZE;
 
 
@@ -108,7 +108,11 @@ class ArtistProfileScreen extends React.Component {
       outputRange:['40%','5%'],
       extrapolate:'clamp',
     });
-
+    const listenersSize = this.state.scrollY.interpolate({
+      inputRange:[0,HEADER_SIZE_RANGE],
+      outputRange:[10,0],
+      extrapolate:'clamp',
+    });
         return (
 
       <ImageBackground style = {styles.container} source = {require('./assets/bg.jpg')}>
@@ -116,7 +120,7 @@ class ArtistProfileScreen extends React.Component {
           style={styles.linearGradient}>
           <Animated.View style={{marginTop: marginSize}}>
             <Animated.Text style={[styles.name, {fontSize: nameSize}]}>{`High\nKlassified`}</Animated.Text>
-            <Text style={styles.listeners}>46,856 MONTHLY LISTENERS</Text>
+            <Animated.Text style={[styles.listeners,{fontSize:listenersSize}]}>46,856 MONTHLY LISTENERS</Animated.Text>
             <TouchableOpacity style={styles.button}
               onPress={this.togglePlaying}>
               {this.playingText()}
@@ -381,7 +385,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'grey',
     marginBottom: 20,
-    fontSize: 10,
   },
 
   button: {
