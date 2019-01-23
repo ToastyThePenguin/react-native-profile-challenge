@@ -44,7 +44,7 @@ class ArtistProfileScreen extends React.Component {
 
 
     this.togglePlaying = this.togglePlaying.bind(this);
-    this.getState = this.getState.bind(this);
+    this.getPlaying = this.getPlaying.bind(this);
   }
 
 
@@ -72,7 +72,7 @@ class ArtistProfileScreen extends React.Component {
     });
     return parseInt(nameSize*4)
   }
-  getState(){
+  getPlaying(){
     return this.state.isPlaying;
   }
 
@@ -88,7 +88,7 @@ class ArtistProfileScreen extends React.Component {
           ),
         headerLeft: (
           <TouchableOpacity style={{padding:10}}
-            onPress={() => {navigation.navigate('Playing', {playingParam: this.getState})}}>
+            onPress={() => {navigation.navigate('Playing', {playingParam: this.getPlaying})}}>
             <Icon name="chevron-thin-left" size ={10} color='white'/>
            </TouchableOpacity>
           ),
@@ -103,6 +103,7 @@ class ArtistProfileScreen extends React.Component {
       outputRange:[HEADER_MAX_SIZE,HEADER_MIN_SIZE],
       extrapolate:'clamp',
     });
+
 
         return (
 
@@ -225,10 +226,11 @@ class LibraryScreen extends React.Component{
 class PlayingScreen extends React.Component{
 
   render(){
+    const {params} = this.props.navigation.state;
 
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-          <Animated.Text style = {{fontSize:40, }}>{this.props.navigation.state.params.playingParam?
+          <Animated.Text style = {{fontSize:40, }}>{params.playingParam?
             'SOMETHING IS PLAYING': 'NOTHING PLAYING'}</Animated.Text>
       </View>
     );
