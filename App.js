@@ -1,7 +1,7 @@
 
 import React, {Component} from 'react';
 import {Animated, Platform, StyleSheet, Text, View, ImageBackground,Button, Alert,
-  TouchableOpacity,ScrollView} from 'react-native';
+  TouchableOpacity,ScrollView, Picker} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Entypo';
 import {createStackNavigator,createAppContainer, createBottomTabNavigator} from 'react-navigation';
@@ -32,9 +32,11 @@ const HEADER_MAX_SIZE=50;
 const HEADER_MIN_SIZE = 2;
 const HEADER_SIZE_RANGE = HEADER_MAX_SIZE - HEADER_MIN_SIZE;
 
+
 class ArtistProfileScreen extends React.Component {
-  constructor(props){
-    super(props);
+
+  constructor(){
+    super();
     this.state={
       isPlaying: false,
       scrollY:new Animated.Value(0),
@@ -42,7 +44,7 @@ class ArtistProfileScreen extends React.Component {
 
 
     this.togglePlaying = this.togglePlaying.bind(this);
-
+    this.getState = this.getState.bind(this);
   }
 
 
@@ -70,7 +72,30 @@ class ArtistProfileScreen extends React.Component {
     });
     return parseInt(nameSize*4)
   }
+  getState(){
+    return this.state.isPlaying;
+  }
 
+
+  static navigationOptions = ({ navigation }) => {
+
+      return {
+        headerRight:(
+            <TouchableOpacity style={{padding:10}}
+              onPress={() => navigation.navigate('MyModal')}>
+              <Icon name="dots-three-horizontal" size ={10} color='white'/>
+             </TouchableOpacity>
+          ),
+        headerLeft: (
+          <TouchableOpacity style={{padding:10}}
+            onPress={() => {navigation.navigate('Playing', {playingParam: this.getState})}}>
+            <Icon name="chevron-thin-left" size ={10} color='white'/>
+           </TouchableOpacity>
+          ),
+
+        /* the rest of this config is unchanged */
+      };
+    };
 
   render() {
     const nameSize = this.state.scrollY.interpolate({
@@ -78,6 +103,7 @@ class ArtistProfileScreen extends React.Component {
       outputRange:[HEADER_MAX_SIZE,HEADER_MIN_SIZE],
       extrapolate:'clamp',
     });
+
         return (
 
       <ImageBackground style = {styles.container} source = {require('./assets/bg.jpg')}>
@@ -132,68 +158,102 @@ class ArtistProfileScreen extends React.Component {
   }
 }
 
-class LibraryScreen extends React.Component{
-  render(){
+
+class ModalScreen extends React.Component {
+  render() {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <Text >Library Screen</Text>
+      <View style={{flex:1 ,alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 30,textAlign:'center' }}>{`Hello!\nPlease dimiss me.`}</Text>
+        <Button
+          onPress={() => this.props.navigation.goBack()}
+          title="Dismiss"
+        />
       </View>
     );
   }
 }
-const HEADER_MAX_HEIGHT=60;
-const HEADER_MIN_HEIGHT = 20;
-const HEADER_SCROLL_DIST = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
-class HomeScreen extends React.Component{
-  constructor(props){
-    super(props);
-    this.state = {scrollY:new Animated.Value(0), headerBG: 'blue'};
-
+class LibraryScreen extends React.Component{
+  constructor(){
+    super();
+    this.state = {pickerValue : 'Song'}
   }
+  static navigationOptions = ({ navigation }) => {
 
+      return {
+        headerRight:(
+            <TouchableOpacity style={{padding:10}}
+              onPress={() => navigation.navigate('MyModal')}>
+              <Icon name="dots-three-horizontal" size ={10} color='white'/>
+             </TouchableOpacity>
+          ),
+        headerLeft: (
+          <TouchableOpacity style={{padding:10}}
+            onPress={() => {navigation.navigate('Search')}}>
+            <Icon name="chevron-thin-left" size ={10} color='white'/>
+           </TouchableOpacity>
+          ),
+
+        /* the rest of this config is unchanged */
+      };
+    };
 
 
   render(){
-    const headerSize = this.state.scrollY.interpolate({
-      inputRange:[0,HEADER_SCROLL_DIST],
-      outputRange:[HEADER_MAX_HEIGHT,HEADER_MIN_HEIGHT],
-      extrapolate:'clamp',
-    });
-    const headerBG = headerSize<=40? 'red':'blue';
+
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor:'#111' }}>
+        <Text style={{color:'white', fontWeight:'bold'}}>Please select a song:</Text>
+        <Picker style={{width:'75%', color: 'cyan', backgroundColor:'#333'}}
+          mode = 'dropdown'
+          selectedValue = {this.state.pickerValue}
+          onValueChange = {(itemValue,itemIndex) => this.setState({pickerValue : itemValue})}>
+            <Picker.Item label='Vex' value ='vex'/>
+            <Picker.Item label='16 Psyche' value ='16 psyche'/>
+            <Picker.Item label='Particle Flux' value ='particle flux'/>
+            <Picker.Item label='Twin Fawns' value ='twin fawns'/>
+            <Picker.Item label='Survive' value ='survive'/>
+            <Picker.Item label='Carrion Flowers' value ='carrion flowers'/>
+
+
+        </Picker>
+      </View>
+    );
+  }
+}
+
+class PlayingScreen extends React.Component{
+
+  render(){
 
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-          <Animated.Text style = {{fontSize:headerSize, backgroundColor: 'blue'}}>Home Screen</Animated.Text>
-
-        <ScrollView style={{marginTop:HEADER_MAX_HEIGHT}}
-          scrollEventThrottle ={16} onScroll = {Animated.event([{nativeEvent: {contentOffset:{y: this.state.scrollY}}}])}>
-            <ListSong number="1" songName='1919' listensCount='372,363'/>
-            <ListSong number="2" songName='NS Bounce' listensCount='97,628'/>
-            <ListSong number="3" songName='Numb' listensCount='91,587'/>
-            <ListSong number="4" songName='Gold' listensCount='637,548'/>
-            <ListSong number="5" songName='Barely' listensCount='114,828'/>
-            <ListSong number="6" songName='Another Song' listensCount='0'/>
-            <ListSong number="7" songName='Another Song' listensCount='0'/>
-            <ListSong number="8" songName='Another Song' listensCount='0'/>
-            <ListSong number="9" songName='Another Song' listensCount='0'/>
-            <ListSong number="10" songName='Another Song' listensCount='0'/>
-            <ListSong number="11" songName='Another Song' listensCount='0'/>
-          </ScrollView>
-
+          <Animated.Text style = {{fontSize:40, }}>{this.props.navigation.state.params.playingParam?
+            'SOMETHING IS PLAYING': 'NOTHING PLAYING'}</Animated.Text>
       </View>
     );
+  }
+}
+
+class HomeScreen extends React.Component {
+
+  render(){
+    return(
+      <Text>NOTHING TO SEE HERE</Text>
+    )
   }
 }
 
 const SearchStack = createStackNavigator(
 {
-      Home:HomeScreen,
+
       Search:ArtistProfileScreen,
-      Library: LibraryScreen,
+      Playing:PlayingScreen,
+      MyModal: ModalScreen,
 },
 {
   initialRouteName: 'Search',
+
   defaultNavigationOptions:{
     headerTitle:(
       <TouchableOpacity style={{
@@ -258,7 +318,7 @@ const TabNavigator = createBottomTabNavigator(
     defaultNavigationOptions:({navigation}) =>({
 
       tabBarOptions:{
-        activeTintColor:'white',
+        activeTintColor:'#1db954',
         showIcon: true,
         style:{
           backgroundColor:'#111',
